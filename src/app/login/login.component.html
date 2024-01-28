@@ -1,0 +1,32 @@
+
+<div class="container">
+    <div class="card">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+  
+        <div>
+          <label for="email">Email:</label>
+          <input type="text" id="email" formControlName="email" />
+          <div class="error" *ngIf="hasError('email', 'required')">Email is required</div>
+          <div class="error" *ngIf="hasError('email', 'email')">Invalid Email</div>
+        </div>
+  
+        <div>
+          <label for="password">Password:</label>
+          <input type="password" id="password" formControlName="password" />
+          <div class="error" *ngIf="hasError('password', 'required')">Password is required</div>
+          <div class="error" *ngIf="hasError('password', 'minlength')">Password should be at least 8 characters</div>
+        </div>
+  
+        <button type="submit" [disabled]="!loginForm.valid">Login</button>
+        
+        <button class="login-button" (click)="signInWithGoogle()">
+          <img src="assets/google.svg" alt="Google Icon" class="icon" />
+          Login with Google
+        </button>
+  
+      </form>
+      <span> New User <a [routerLink]="['/signup']"> signup </a></span>
+
+    </div>
+  </div>
+  

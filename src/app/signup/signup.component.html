@@ -1,0 +1,67 @@
+<div class="container">
+    <div class="card">
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" >
+  
+        <div>
+          <label for="name">Name:</label>
+          <input type="text" id="name" formControlName="name" />
+          <div class="error" *ngIf="hasError('name', 'required')">Name is required</div>
+          <div class="error" *ngIf="hasError('name', 'minlength')">Name should be at least 3 characters</div>
+          <div class="error" *ngIf="hasError('name', 'maxlength')">Name should not exceed 50 characters</div>
+        </div>
+  
+        <div>
+          <label for="contactNumber">Contact Number:</label>
+          <input type="text" id="contactNumber" formControlName="contactNumber" />
+          <div class="error" *ngIf="hasError('contactNumber', 'required')">Contact Number is required</div>
+          <div class="error" *ngIf="hasError('contactNumber', 'pattern')">Invalid Contact Number</div>
+        </div>
+  
+        <div>
+          <label for="email">Email:</label>
+          <input type="text" id="email" formControlName="email" />
+          <div class="error" *ngIf="hasError('email', 'required')">Email is required</div>
+          <div class="error" *ngIf="hasError('email', 'email')">Invalid Email</div>
+        </div>
+  
+        <div>
+          <label for="password">Password:</label>
+          <input type="password" id="password" formControlName="password" />
+          <div class="error" *ngIf="hasError('password', 'required')">Password is required</div>
+          <div class="error" *ngIf="hasError('password', 'pattern')">Password should be at least 8 characters with 1 number and 1 special character </div>
+        </div>
+
+        <div>
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="confirmPassword" id="confirmPassword" formControlName="confirmPassword" />
+            <div class="error" *ngIf="hasError('confirmPassword', 'required')">Confirm Password is required</div>
+            <div class="error" *ngIf="hasError('confirmPassword', 'pattern')">Confirm Password should be at least 8 characters with 1 number and 1 special character </div>
+            <div class="error" *ngIf="hasError('confirmPassword' , 'passwordMismatch'  )">Passwords do not match</div>
+        </div>
+  
+        <div>
+          <label for="age">Age:</label>
+          <input type="number" id="age" formControlName="age" />
+          <div class="error" *ngIf="hasError('age', 'required')">Age is required</div>
+          <div class="error" *ngIf="hasError('age', 'min')">Minimum age is 18</div>
+          <div class="error" *ngIf="hasError('age', 'max')">Maximum age is 99</div>
+        </div>
+  
+    <div>
+          <label for="courses">Courses:</label>
+          <select id="courses" formControlName="courses">
+            <option value="" disabled selected>Select a course</option>
+            <option *ngFor="let course of coursesDropdown ;" value="{{ course.value }}">{{ course.itemName}}</option>
+          </select>
+          <div class="error" *ngIf="hasError('courses', 'required')">Courses is required</div>
+          <div class="error" *ngIf="hasError('courses', 'pattern')">Invalid Courses</div>
+        </div>
+  
+        <button type="submit" [disabled]="!signupForm.valid">Sign Up</button>
+        
+      </form>
+
+      <span> Already user <a [routerLink]="['/login']"> login </a></span>
+    </div>
+  </div>
+  
