@@ -17,12 +17,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; 
 import { RouterModule } from '@angular/router';
 import { NgxEchartsModule } from 'ngx-echarts';
 import * as echarts from 'echarts';
-import { SocialLoginModule, SocialAuthServiceConfig} from 'angularx-social-login';
-import {
-  GoogleLoginProvider,
-} from 'angularx-social-login';
-
 import { environment } from '../environment/environment';
+import { AuthModule } from 'angular-auth-oidc-client';
 
 
 @NgModule({
@@ -42,31 +38,26 @@ import { environment } from '../environment/environment';
     ToastrModule.forRoot(),
     RouterModule, 
     NgxEchartsModule.forRoot({ echarts }),
-    SocialLoginModule
+    AuthModule.forRoot({
+      config: {
+        authority: 'https://accounts.google.com',
+        redirectUrl: "http://localhost:3000/auth/google/callback",
+        clientId: '284778176057-0bdfr6oj1k3su1qm6g7dn0v3dcrkhr88.apps.googleusercontent.com',
+        responseType: 'code',
+        scope: 'openid profile email',
+        postLogoutRedirectUri: window.location.origin,
+        startCheckSession: false,
+        silentRenew: false,
+        silentRenewUrl: window.location.origin + '/silent-renew.html',
+      },
+    }),
+
   ],
   providers: [
     AuthGuard,
     AuthService,
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    {
-      provide: 'SocialAuthServiceConfig',
-      useValue: {
-        autoLogin: false,
-        providers: [
-          {
-            id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider(
-              environment.access_token
-            )
-          }
-        ],
-        onError: (err) => {
-          console.error(err);
-        }
-      } as SocialAuthServiceConfig,
-    }
     
-
   ],
   bootstrap: [AppComponent]
 })

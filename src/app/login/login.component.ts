@@ -1,10 +1,14 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../auth.service';
+// import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import {  GoogleLoginProvider, SocialAuthService, SocialUser } from "angularx-social-login";
+// import {  GoogleLoginProvider, SocialAuthService, SocialUser } from "angularx-social-login";
 
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { catchError, map } from 'rxjs/operators';
 
 
 @Component({
@@ -17,10 +21,10 @@ export class LoginComponent {
   loginForm: FormGroup;
 
   constructor(private fb: FormBuilder,
-     private authService: AuthService ,
      private router : Router, 
      private toastr: ToastrService, 
-     private authSocialService: SocialAuthService
+     public oidcSecurityService: OidcSecurityService, 
+     private http: HttpClient
      ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -28,60 +32,87 @@ export class LoginComponent {
     });
   }
 
+  
+
+  ngOnInit() {
+    this.oidcSecurityService
+      .checkAuth()
+      .subscribe((loginResponse: any) => {
+        const { isAuthenticated, userData, accessToken, idToken, configId } =
+          loginResponse;
+
+        /*...*/
+      });
+  }
+
+  // login() {
+  //   this.oidcSecurityService.authorize();
+  // }
+
+  login() {
+    this.http.get<any>(`http://localhost:3000/api/auth/google`).subscribe( val => 
+      console.log(val))
+  }
+
+
   hasError(controlName: string, errorName: string): boolean {
     return this.loginForm.get(controlName).hasError(errorName) && this.loginForm.get(controlName).invalid && this.loginForm.get(controlName).touched;
   }
 
-  signInWithGoogle(): void {
-    this.authSocialService.signIn(GoogleLoginProvider.PROVIDER_ID).then((user: SocialUser) => {
-      this.authService.googleLogin(user).subscribe(
-        (response : any) => {
+  onSubmit(){
 
-          if(response.status == true){
-
-            this.toastr.success(response.message , "Success");
-            // why is it not giving me the result.
-            localStorage.setItem('token', JSON.stringify(response.values['jwt_token']));
-            localStorage.setItem('role' ,JSON.stringify(response.values['user']['role']) ); 
-
-            this.router.navigate(['user_page']); 
-          }
-          
-          
-        },
-        (error) => {
-          console.log(error)
-          this.toastr.error(error.error.message , "Failed")
-        }
-      )
-    });
   }
 
+  // signInWithGoogle(): void {
+  //   this.authSocialService.signIn(GoogleLoginProvider.PROVIDER_ID).then((user: SocialUser) => {
+  //     this.authService.googleLogin(user).subscribe(
+  //       (response : any) => {
 
-  onSubmit() {
-    if (this.loginForm.valid) {
+  //         if(response.status == true){
 
-      this.authService.login(this.loginForm.value).subscribe(
-        (response : any) => {
+  //           this.toastr.success(response.message , "Success");
+  //           // why is it not giving me the result.
+  //           localStorage.setItem('token', JSON.stringify(response.values['jwt_token']));
+  //           localStorage.setItem('role' ,JSON.stringify(response.values['user']['role']) ); 
 
-          if(response.status == true){
-
-            this.toastr.success(response.message , "Success");
-            // why is it not giving me the result.
-            localStorage.setItem('token', JSON.stringify(response.values['jwt_token']));
-            localStorage.setItem('role' ,JSON.stringify(response.values['user']['role']) ); 
-
-            this.router.navigate(['user_page']); 
-          }
+  //           this.router.navigate(['user_page']); 
+  //         }
           
           
-        },
-        (error) => {
-          console.log(error)
-          this.toastr.error(error.error.message , "Failed")
-        }
-      )
-    }
-  }
+  //       },
+  //       (error) => {
+  //         console.log(error)
+  //         this.toastr.error(error.error.message , "Failed")
+  //       }
+  //     )
+  //   });
+  // }
+
+
+  // onSubmit() {
+  //   if (this.loginForm.valid) {
+
+  //     this.authService.login(this.loginForm.value).subscribe(
+  //       (response : any) => {
+
+  //         if(response.status == true){
+
+  //           this.toastr.success(response.message , "Success");
+  //           // why is it not giving me the result.
+  //           localStorage.setItem('token', JSON.stringify(response.values['jwt_token']));
+  //           localStorage.setItem('role' ,JSON.stringify(response.values['user']['role']) ); 
+
+  //           this.router.navigate(['user_page']); 
+  //         }
+          
+          
+  //       },
+  //       (error) => {
+  //         console.log(error)
+  //         this.toastr.error(error.error.message , "Failed")
+  //       }
+  //     )
+  //   }
+  // }
 
 }
